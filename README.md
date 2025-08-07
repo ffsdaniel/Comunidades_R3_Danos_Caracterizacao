@@ -1,0 +1,1 @@
+# Comunidades_R3_Danos_Caracterizacao

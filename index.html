@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+  <link rel="stylesheet" href="./resources/ol.css">
+  <link rel="stylesheet" href="resources/fontawesome-all.min.css">
+  <link rel="stylesheet" type="text/css" href="resources/horsey.min.css">
+  <link rel="stylesheet" type="text/css" href="resources/ol3-search-layer.min.css">
+  <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+  <link rel="stylesheet" href="./resources/qgis2web.css">
+  <style>
+    html, body { background-color: #ffffff; margin: 0; padding: 0; height: 100%; width: 100%; }
+    #map { width: 100%; height: 100%; }
+    .ol-control > * {
+      background-color: #f8f8f8 !important;
+      color: #444444 !important;
+      border-radius: 0px;
+    }
+    .ol-control > *:focus, .ol-control >*:hover {
+      background-color: rgba(248, 248, 248, 0.7) !important;
+    }
+    .ol-control {
+      background-color: rgba(255,255,255,.4) !important;
+      padding: 2px !important;
+    }
+    .control-panel {
+      display: none;
+      margin-top: 6px;
+      background: white;
+      border: 1px solid #ccc;
+      box-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    .legenda {
+      position: absolute;
+      right: 10px;
+      z-index: 400;
+      background: white;
+      padding: 8px 12px;
+      border: 1px solid #666;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+      max-height: 250px;
+      overflow-y: auto;
+      min-width: 180px;
+    }
+  </style>
+  <title>Comunidades da Região 3 - Caracterização e Danos Coletivos</title>
+</head>
+
+<body>
+<!-- Controle de Danos -->
+<div id="dano-toggle-container" class="ol-control" style="position:absolute; top:160px; left:10px; z-index:1000;">
+  <button id="toggle-dano-btn" style="padding: 8px 12px; font-size: 14px; min-width: 80px; cursor: pointer;">
+    Danos
+  </button>
+  <div id="dano-panel" class="control-panel">
+    <select id="dano-select" style="width:280px; padding:6px; font-size:13px;">
+      <option value="">Selecione um dano</option>
+      <option value="DBJSI01">DBJSI01 - Perda da ligação com o lugar onde vivia e se sentia bem</option>
+      <option value="DBJSI02">DBJSI02 - Aumento de brigas, desententimentos e disputas entre os moradores</option>
+      <option value="DBJSI03">DBJSI03 - Medo e dúvida sobre terem seus direitos como pessoas atingidas reconhecidos</option>
+      <option value="DBJSI04">DBJSI04 - Demora, enrolação e erros nas medidas reparatórias</option>
+      <option value="DBJSI05">DBJSI05 - Mudança na cultura e nas tradições da comunidade (PCTs)</option>
+      <option value="DBJSI06">DBJSI06 - Dificuldade para realizar os rituais e festas das religiões negras e quilombolas</option>
+      <option value="DBJSI07">DBJSI07 - Dificuldade de passar os ensinamentos tradicionais dos mais velhos para os mais novos</option>
+      <option value="DBJSI08">DBJSI08 - Alteração no uso e preparação de remédios naturais e tratamentos tradicionais</option>
+      <option value="DBJSI09">DBJSI09 - Falta de liberdade para o povo das religiões de matriz africana praticar sua fé</option>
+      <option value="DBJSI10">DBJSI10 - Mudança no jeito do povo viver em coletivo, trocar ajuda e manter os costumes (PCts)</option>
+      <option value="DBJSI11">DBJSI11 - Alteração na produção e realização de manifestações culturais e artísticas locais</option>
+      <option value="DBJSI12">DBJSI12 - Dificuldade na produção e venda de artesanato</option>
+      <option value="DBJSI13">DBJSI13 - Alteração da paisagem, áreas naturais e seus acessos</option>
+      <option value="DBJSI14">DBJSI14 - Alteração de costumes e tradições locais</option>
+      <option value="DBJSI15">DBJSI15 - Dificuldade para manter os cultos, rituais e celebrações religiosas</option>
+      <option value="DBJSI16">DBJSI16 - Diminuição da realização de festas, campeonatos e eventos na comunidade</option>
+      <option value="DBJSI17">DBJSI17 - Dificuldades no acesso e funcionamento das escolas</option>
+      <option value="DBJSI18">DBJSI18 - Aumento da dificuldade para navegar no rio</option>
+      <option value="DBJSI19">DBJSI19 - Piora das condições das Estradas Rurais</option>
+      <option value="DBJSI20">DBJSI20 - Mudança na quantidade e no perfil das pessoas na comunidade</option>
+      <option value="DBJSI21">DBJSI21 - Preconceito e desvalorização dos locais atingidos</option>
+      <option value="DBJSI22">DBJSI22 - Fim ou interrupção de projetos e dos planos sociais e comunitários</option>
+      <option value="DBJSI23">DBJSI23 - Medo de novos rompimentos de barragens</option>
+      <option value="DBJSI24">DBJSI24 - Piora no bem-estar e no dia a dia das pessoas atingidas</option>
+      <option value="DBJSI25">DBJSI25 - Aumento do trabalho para cuidar da casa e da família</option>
+      <option value="DBJSI26">DBJSI26 - Mudança no jeito de viver das comunidades</option>
+      <option value="DBJSI27">DBJSI27 - Medo em se deslocar dentro da comunidade</option>
+      <option value="DBJSI28">DBJSI28 - Fechamento ou deterioração de espaços coletivos, comunitários</option>
+      <option value="DBJSI29">DBJSI29 - As relações entre os vizinhos e moradores ficaram mais distantes ou se quebraram</option>
+      <option value="DBJSI30">DBJSI30 - Sobrecarga na coleta de lixo e acúmulo de sujeira</option>
+      <option value="DBJSI31">DBJSI31 - Perda ou sobrecarga nos sistemas de abastecimento de água</option>
+      <option value="DBJSI32">DBJSI32 - Perda ou sobrecarga nos sistemas de esgoto</option>
+      <option value="DIFSM01">DIFSM01 - Aumento da ocorrência de adoecimento e mortes</option>
+      <option value="DIFSM02">DIFSM02 - Piora na saúde de pessoas com doenças como diabetes, doenças na pele e pressão alta</option>
+      <option value="DIFSM03">DIFSM03 - Estresse, ansiedade e tristeza na comunidade</option>
+      <option value="DIFSM04">DIFSM04 - Sobrecarga dos postos de saúde, hospitais e centros de assistência sociais</option>
+      <option value="DIFSM05">DIFSM05 - Aumento do consumo de álcool, drogas e medicamentos na localidade</option>
+      <option value="DPME01">DPME01 - Medo de que a água, o solo, o ar e os peixes estejam contaminados</option>
+      <option value="DPME02">DPME02 - Medo de que os alimentos produzidos na região estejam contaminados</option>
+      <option value="DPME03">DPME03 - Restrição da pesca por contaminação do rio</option>
+      <option value="DPME04">DPME04 - Comunidades tradicionais pararam ou mudaram o jeito de usar a terra e os recursos da natureza</option>
+      <option value="DPME05">DPME05 - Fim ou prejuízo do jeito de realizar atividades econômicas tradicionais (PCts)</option>
+      <option value="DPME06">DPME06 - Piora no serviço de apoio social</option>
+      <option value="DPME07">DPME07 - Alteração das práticas de lazer e recreação</option>
+      <option value="DPME08">DPME08 - Enfraquecimento do turismo nos territórios</option>
+      <option value="DPME09">DPME09 - Redução do número de turistas e da visitação turística</option>
+      <option value="DPME10">DPME10 - Destruição de pontos turísticos e seus acessos</option>
+      <option value="DPME11">DPME11 - Aumento das dificuldades financeiras e diminuição das oportunidades</option>
+      <option value="DPME12">DPME12 - Perda de trabalho</option>
+      <option value="DPME13">DPME13 - Proibição de uso das terras próximas ao rio</option>
+      <option value="DPME14">DPME14 - Prejuízo na produção e venda de alimentos produzidos na zona rural</option>
+      <option value="DPME15">DPME15 - Enfraquecimento da pesca nos territórios</option>
+      <option value="DPME16">DPME16 - Aumento da dificuldade para coletar e vender produtos naturais</option>
+      <option value="DPME17">DPME17 - Desvalorização dos produtos da região</option>
+      <option value="DPME18">DPME18 - Desvalorização dos serviços locais</option>
+      <option value="DPME19">DPME19 - Queda na produção agrícola e pecuária do território</option>
+      <option value="DPME20">DPME20 - Redução na extração de recursos naturais minerais</option>
+      <option value="DPME21">DPME21 - Enfraquecimento do comércio e da economia na região</option>
+      <option value="DPME22">DPME22 - Redução dos fornecedores de bens e serviços</option>
+      <option value="DPME23">DPME23 - Perdas e diminuição de clientes e negócios</option>
+      <option value="DPME24">DPME24 - Alteração no beneficiamento de produtos na região</option>
+      <option value="DPME25">DPME25 - Alteração no jeito de trabalhar e produzir nas localidades</option>
+      <option value="DPME26">DPME26 - Diminuição da produção das associações e cooperativas</option>
+      <option value="DPME27">DPME27 - Aumento de pessoas se mudando para outras localidades</option>
+      <option value="DPME28">DPME28 - Piora nas condições de moradia</option>
+      <option value="DPME29">DPME29 - Medo de contaminação das pessoas</option>
+      <option value="DPME30">DPME30 - Aumento da dificuldade para ter comida suficiente e saudável</option>
+      <option value="DPME31">DPME31 - Dificuldade para conseguir ou produzir comida como antes</option>
+      <option value="DPME32">DPME32 - Medo de não ter água suficiente</option>
+      <option value="DPME33">DPME33 - Aumento da necessidade de perfuração de novos poços e cisternas</option>
+      <option value="DPME34">DPME34 - Restrição e diminuição do acesso a água de qualidade</option>
+      <option value="DPME35">DPME35 - Redução na extração de recursos naturais vegetais</option>
+    </select>
+  </div>
+</div>
+
+<!-- Controle de Características -->
+<div id="caracteristicas-toggle-container" class="ol-control" style="position:absolute; top:240px; left:10px; z-index:1000;">
+  <button id="toggle-caracteristicas-btn" style="padding: 8px 14px; font-size: 13px; min-width: 120px; cursor: pointer;">
+    Características
+  </button>
+  <div id="caracteristicas-panel" class="control-panel">
+    <select id="caracteristicas-select" style="width:280px; padding:6px; font-size:13px;">
+      <option value="">Selecione uma característica</option>
+      <!-- As opções serão preenchidas dinamicamente -->
+    </select>
+  </div>
+</div>
+
+<!-- Legendas -->
+<div id="legenda-danos" class="legenda" style="bottom: 30px; display: none;">
+  <b>Legenda - Danos</b><br>
+  <div style="display:flex; align-items:center; gap:6px; margin-top:6px;">
+    <div style="width:16px; height:16px; background:#009600; border:1px solid #000;"></div> 
+    <span>Presente</span>
+  </div>
+  <div style="display:flex; align-items:center; gap:6px; margin-top:4px;">
+    <div style="width:16px; height:16px; background:#C80000; border:1px solid #000;"></div> 
+    <span>Ausente</span>
+  </div>
+  <div style="display:flex; align-items:center; gap:6px; margin-top:4px;">
+    <div style="width:16px; height:16px; background:#CCCCCC; border:1px solid #000;"></div> 
+    <span>Sem informação</span>
+  </div>
+</div>
+
+<div id="legenda-caracteristicas" class="legenda" style="bottom: 30px; display: none;">
+  <b>Legenda - Características</b><br>
+  <div id="legenda-caracteristicas-content" style="margin-top:6px;">
+    <!-- Conteúdo será preenchido dinamicamente -->
+  </div>
+</div>
+
+<!-- Mapa -->
+<div id="map">
+  <div id="popup" class="ol-popup">
+    <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+    <div id="popup-content"></div>
+  </div>
+</div>
+
+<!-- Scripts necessários -->
+<script src="resources/qgis2web_expressions.js"></script>
+<script src="resources/proj4.js"></script>
+<script>proj4.defs('EPSG:31983','+proj=utm +zone=23 +south +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');</script>
+<script src="./resources/functions.js"></script>
+<script src="./resources/ol.js"></script>
+<script src="resources/horsey.min.js"></script>
+<script src="resources/ol3-search-layer.js"></script>
+<script src="./resources/ol-layerswitcher.js"></script>
+
+<!-- Camadas -->
+<script src="layers/MunicpiosdaRegio3_1.js"></script>
+<script src="layers/DiagnsticoColetivodeDanos_2.js"></script>
+<script src="layers/CaracterizaodasComunidades_3.js"></script>
+<script src="layers/RioParaopeba_4.js"></script>
+
+<!-- Estilos -->
+<script src="styles/MunicpiosdaRegio3_1_style.js"></script>
+<script src="styles/DiagnsticoColetivodeDanos_2_style.js"></script>
+<script src="styles/CaracterizaodasComunidades_3_style.js"></script>
+<script src="styles/RioParaopeba_4_style.js"></script>
+
+<!-- Layers -->
+<script src="./layers/layers.js" type="text/javascript"></script>
+
+<script src="./resources/Autolinker.min.js"></script>
+<script src="./resources/qgis2web.js"></script>
+
+<script>
+// Variáveis globais
+var selectedDano = "";
+var selectedCaracteristica = "";
+var searchMarkerLayer;
+var caracteristicasColors = {};
+var currentMode = 'none'; // 'danos', 'caracteristicas', 'none'
+
+// Paleta de cores para características
+const colorPalette = [
+  '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd',
+  '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf',
+  '#aec7e8', '#ffbb78', '#98df8a', '#ff9896', '#c5b0d5',
+  '#c49c94', '#f7b6d3', '#c7c7c7', '#dbdb8d', '#9edae5',
+  '#393b79', '#637939', '#8c6d31', '#843c39', '#7b4173'
+];
+
+// Função para gerar cores dinâmicas
+function generateColor(index) {
+  if (index < colorPalette.length) {
+    return colorPalette[index];
+  }
+  // Se precisar de mais cores, gerar aleatoriamente
+  const hue = (index * 137.5) % 360; // Golden angle
+  return `hsl(${hue}, 65%, 55%)`;
+}
+
+// Função para atualizar estilo das características
+function updateCaracteristicasStyle() {
+  if (!selectedCaracteristica || typeof lyr_CaracterizaodasComunidades_3 === 'undefined') {
+    return;
+  }
+
+  // Coletar valores únicos do campo selecionado
+  const uniqueValues = new Set();
+  const features = lyr_CaracterizaodasComunidades_3.getSource().getFeatures();
+  
+  features.forEach(feature => {
+    const value = feature.get(selectedCaracteristica);
+    if (value !== null && value !== undefined && value !== '') {
+      uniqueValues.add(value.toString());
+    }
+  });
+
+  // Criar mapeamento cor-valor
+  caracteristicasColors = {};
+  const sortedValues = Array.from(uniqueValues).sort();
+  sortedValues.forEach((value, index) => {
+    caracteristicasColors[value] = generateColor(index);
+  });
+
+  // Aplicar novo estilo
+  lyr_CaracterizaodasComunidades_3.setStyle((feature, resolution) => {
+    const value = feature.get(selectedCaracteristica);
+    const stringValue = value ? value.toString() : '';
+    const color = caracteristicasColors[stringValue] || '#888888';
+    
+    return new ol.style.Style({
+      fill: new ol.style.Fill({
+        color: color + '80' // 50% de opacidade
+      }),
+      stroke: new ol.style.Stroke({
+        color: '#000000',
+        width: 1
+      })
+    });
+  });
+
+  updateLegenda();
+}
+
+// Função para atualizar legendas
+function updateLegenda() {
+  // Ocultar todas as legendas primeiro
+  document.getElementById('legenda-danos').style.display = 'none';
+  document.getElementById('legenda-caracteristicas').style.display = 'none';
+
+  if (currentMode === 'danos' && selectedDano) {
+    document.getElementById('legenda-danos').style.display = 'block';
+  } else if (currentMode === 'caracteristicas' && selectedCaracteristica) {
+    // Atualizar conteúdo da legenda de características
+    const content = document.getElementById('legenda-caracteristicas-content');
+    content.innerHTML = '';
+
+    Object.entries(caracteristicasColors).forEach(([value, color]) => {
+      const item = document.createElement('div');
+      item.style.cssText = 'display:flex; align-items:center; gap:6px; margin-top:4px;';
+      
+      const colorBox = document.createElement('div');
+      colorBox.style.cssText = `width:16px; height:16px; background:${color}; border:1px solid #000;`;
+      
+      const label = document.createElement('span');
+      label.textContent = value;
+      label.style.fontSize = '11px';
+      
+      item.appendChild(colorBox);
+      item.appendChild(label);
+      content.appendChild(item);
+    });
+
+    document.getElementById('legenda-caracteristicas').style.display = 'block';
+  }
+}
+
+// Função para popular o select de características
+function populateCaracteristicasSelect() {
+  const select = document.getElementById('caracteristicas-select');
+  
+  if (typeof lyr_CaracterizaodasComunidades_3 === 'undefined') {
+    console.warn('Camada de características não encontrada');
+    return;
+  }
+
+  const features = lyr_CaracterizaodasComunidades_3.getSource().getFeatures();
+  if (features.length === 0) {
+    console.warn('Nenhuma feature encontrada na camada de características');
+    return;
+  }
+
+  // Pegar propriedades da primeira feature
+  const properties = features[0].getProperties();
+  const fieldNames = Object.keys(properties).filter(key => 
+    key !== 'geometry' && 
+    key !== '_layerSearchHighlight' &&
+    !key.startsWith('__')
+  );
+
+  // Limpar opções existentes (exceto a primeira)
+  while (select.children.length > 1) {
+    select.removeChild(select.lastChild);
+  }
+
+  // Adicionar opções
+  fieldNames.forEach(fieldName => {
+    const option = document.createElement('option');
+    option.value = fieldName;
+    option.textContent = fieldName;
+    select.appendChild(option);
+  });
+}
+
+// Função principal de inicialização
+window.onload = function () {
+  // Criar camada para marcador de busca
+  searchMarkerLayer = new ol.layer.Vector({
+    source: new ol.source.Vector(),
+    style: new ol.style.Style({
+      image: new ol.style.Circle({
+        radius: 8,
+        fill: new ol.style.Fill({ color: '#0066CC' }),
+        stroke: new ol.style.Stroke({ color: '#ffffff', width: 2 })
+      })
+    }),
+    zIndex: 1000
+  });
+  map.addLayer(searchMarkerLayer);
+
+  // Popular select de características
+  setTimeout(() => {
+    populateCaracteristicasSelect();
+  }, 1000);
+
+  // === CONTROLE DE DANOS ===
+  const danoBtn = document.getElementById('toggle-dano-btn');
+  const danoPanel = document.getElementById('dano-panel');
+  const danoSelect = document.getElementById('dano-select');
+
+  danoBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    const isVisible = danoPanel.style.display === 'block';
+    
+    // Fechar outros painéis
+    document.getElementById('caracteristicas-panel').style.display = 'none';
+    
+    danoPanel.style.display = isVisible ? 'none' : 'block';
+  });
+
+  danoSelect.addEventListener('change', function () {
+    selectedDano = this.value;
+    currentMode = selectedDano ? 'danos' : 'none';
+    
+    // Esconder camada de características
+    if (typeof lyr_CaracterizaodasComunidades_3 !== 'undefined') {
+      lyr_CaracterizaodasComunidades_3.setVisible(false);
+    }
+    
+    // Mostrar camada de danos
+    if (typeof lyr_DiagnsticoColetivodeDanos_2 !== 'undefined') {
+      lyr_DiagnsticoColetivodeDanos_2.setVisible(true);
+      lyr_DiagnsticoColetivodeDanos_2.setStyle(style_DiagnsticoColetivodeDanos_2);
+    }
+    
+    updateLegenda();
+  });
+
+  // === CONTROLE DE CARACTERÍSTICAS ===
+  const caracBtn = document.getElementById('toggle-caracteristicas-btn');
+  const caracPanel = document.getElementById('caracteristicas-panel');
+  const caracSelect = document.getElementById('caracteristicas-select');
+
+  caracBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    const isVisible = caracPanel.style.display === 'block';
+    
+    // Fechar outros painéis
+    document.getElementById('dano-panel').style.display = 'none';
+    
+    caracPanel.style.display = isVisible ? 'none' : 'block';
+  });
+
+  caracSelect.addEventListener('change', function () {
+    selectedCaracteristica = this.value;
+    currentMode = selectedCaracteristica ? 'caracteristicas' : 'none';
+    
+    // Esconder camada de danos
+    if (typeof lyr_DiagnsticoColetivodeDanos_2 !== 'undefined') {
+      lyr_DiagnsticoColetivodeDanos_2.setVisible(false);
+    }
+    
+    // Mostrar e atualizar camada de características
+    if (typeof lyr_CaracterizaodasComunidades_3 !== 'undefined') {
+      lyr_CaracterizaodasComunidades_3.setVisible(true);
+      updateCaracteristicasStyle();
+    }
+    
+    updateLegenda();
+  });
+
+  // Fechar painéis ao clicar fora
+  document.addEventListener('click', function (e) {
+    if (!document.getElementById('dano-toggle-container').contains(e.target)) {
+      danoPanel.style.display = 'none';
+    }
+    if (!document.getElementById('caracteristicas-toggle-container').contains(e.target)) {
+      caracPanel.style.display = 'none';
+    }
+  });
+
+  // === SISTEMA DE BUSCA COM MARCADOR ===
+  setTimeout(() => {
+    const searchInputs = document.querySelectorAll('.search-layer-input-search');
+    
+    searchInputs.forEach(input => {
+      input.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+          setTimeout(() => {
+            handleSearchResult();
+          }, 500); // Delay para garantir que a busca foi processada
+        }
+      });
+    });
+
+    // Também interceptar cliques no botão de busca se existir
+    const searchButtons = document.querySelectorAll('.search-layer-button-search');
+    searchButtons.forEach(button => {
+      button.addEventListener('click', function () {
+        setTimeout(() => {
+          handleSearchResult();
+        }, 500);
+      });
+    });
+  }, 2000);
+
+  function handleSearchResult() {
+    // Encontrar feature com highlight
+    let foundFeature = null;
+    const allFeatures = [];
+    
+    map.getLayers().getArray().forEach(layer => {
+      if (layer instanceof ol.layer.Vector && layer !== searchMarkerLayer) {
+        const features = layer.getSource().getFeatures();
+        allFeatures.push(...features);
+      }
+    });
+
+    // Procurar feature destacada
+    foundFeature = allFeatures.find(f => f.get('_layerSearchHighlight'));
+
+    if (foundFeature) {
+      const geometry = foundFeature.getGeometry();
+      let center;
+
+      // Obter centro da geometria
+      if (geometry.getType() === 'Point') {
+        center = geometry.getCoordinates();
+      } else if (geometry.getType() === 'Polygon') {
+        center = geometry.getInteriorPoint().getCoordinates();
+      } else if (geometry.getType() === 'MultiPolygon') {
+        center = geometry.getInteriorPoints().getFirstCoordinate();
+      } else {
+        center = ol.extent.getCenter(geometry.getExtent());
+      }
+
+      // Aplicar zoom suave
+      map.getView().animate({
+        center: center,
+        zoom: Math.min(map.getView().getZoom() + 2, 16),
+        duration: 800
+      });
+
+      // Adicionar marcador azul
+      searchMarkerLayer.getSource().clear();
+      const marker = new ol.Feature(new ol.geom.Point(center));
+      searchMarkerLayer.getSource().addFeature(marker);
+
+      // Remover highlight da feature
+      if (foundFeature.getStyle && foundFeature.getStyle()) {
+        foundFeature.setStyle(null);
+      }
+
+      // Remover marcador após alguns segundos
+      setTimeout(() => {
+        searchMarkerLayer.getSource().clear();
+      }, 5000);
+    }
+  }
+
+  // Inicializar legendas
+  updateLegenda();
+};
+</script>
+
+</body>
+</html>
